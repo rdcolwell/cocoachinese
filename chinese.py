@@ -7,6 +7,7 @@ Created on Sun Jul 10 16:45:50 2022
 """
 import pandas as pd
 from tkinter import *
+from tkinter import ttk
 import random as rand
 
 #reads from a .csv file with headings: "Chinese character", "Pinyin", and "English Translation"]
@@ -23,7 +24,7 @@ high_tones = ['ā','ē','ī','ō','ū']
 tones_color_dictionary = {}
 tones_color_dictionary['neutral'] = [neutral_tones,'#e261ff'] #purple
 tones_color_dictionary['rising'] = [rising_tones,'#4cfc69'] #green
-tones_color_dictionary['falling'] = [falling_tones,'p#ff4f42'] #red
+tones_color_dictionary['falling'] = [falling_tones,'#ff4f42'] #red
 tones_color_dictionary['low'] = [low_tones,'#f6fc4c'] #yellow
 tones_color_dictionary['high'] = [high_tones,'#17a2ff'] #blue
 
@@ -50,20 +51,39 @@ title = Label(interface,text="Color-coded Mandarin flash cards with spaced repit
 title.pack()
 
 #randomly picks a word from the data frame and returns the corresponding character, pinyin, etc. as variables in a list
+
 def picknewword():
     index = rand.choice(range(len(chinese_df)))
     current_character = chinese_df['Chinese character'][index]
     current_pinyin = chinese_df['Pinyin'][index]
     current_translation = chinese_df['English Translation'][index]
     current_color = chinese_df["Tone Color"][index]
-    return [current_character,current_pinyin,current_translation,current_color]
 
+    displaychar.configure(text=current_character,bg=current_color)
+    global sticky_values 
+    sticky_values = [current_pinyin,current_translation]
+    
 #assigns current word's attributes to the "current word," and adds the character (over the "tone color" background, centered) to the tkinter interface
-[current_character,current_pinyin,current_translation,current_color] = picknewword()
-content = Label(interface,text=current_character,font=("Arial",120,),fg="white",bg=current_color)
-content.place(relx=0.5, rely=0.5, anchor=CENTER)
+displaychar = Label(interface,text="",font=("Arial",120),fg="white")
+displaychar.place(relx=0.5, rely=0.3, anchor=CENTER)
+
+displaymeaning = Label(interface,text="",font=("Arial",12),fg="black")
+displaymeaning.place(relx=0.5, rely= 0.65, anchor=CENTER)
+
+newwordbutton = Button(interface,text="Click to generate a character to quiz yourself on!",fg="black", command=picknewword)
+newwordbutton.place(relx=0.5, rely=0.8, anchor=CENTER)
+
+def revealmeaning():
+    meaningtext = "The pinyin for this character is:"+str(sticky_values[0])+ " and the meaning is '"+str(sticky_values[1])+"'"
+    displaymeaning.configure(text=meaningtext,font=("Arial",12),fg="black")
+
+revealmeaningbutton = Button(interface,text="Click to check the pinyin and meaning of this character!",command=revealmeaning)
+revealmeaningbutton.place(relx=0.5, rely=0.55, anchor=CENTER)
+
 
 #displays the tkinter interface
 interface.mainloop()
+
+
 
         
